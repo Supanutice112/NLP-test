@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 
-# Load the model and scaler
+# Load the model
 try:
     with open('house_price_model.pkl', 'rb') as model_file:
         model = pickle.load(model_file)
@@ -15,8 +15,14 @@ except FileNotFoundError:
 except Exception as e:
     st.error(f"Error loading the model: {e}")
 
-with open('scaler.pkl', 'rb') as scaler_file:
-    scaler = pickle.load(scaler_file)
+# Load the scaler
+try:
+    with open('scaler.pkl', 'rb') as scaler_file:
+        scaler = pickle.load(scaler_file)
+except FileNotFoundError:
+    st.error("Scaler file not found. Make sure the file path is correct.")
+except Exception as e:
+    st.error(f"Error loading the scaler: {e}")
 
 data = pd.read_csv("train.csv")
 
@@ -85,9 +91,11 @@ def main():
         scaled_input = scaler.transform(input_data)  # Scale input features
         prediction = model.predict(scaled_input)
 
-        st.success(f"The predicted house price in {future_year} is: ${prediction[0][0]:,.2f}")
+        st.success(f"The predicted house price in {future_year} is: ${prediction.item():,.2f}")
 
         visualize_data(data, overall_qual, grliv_area, garage_cars, full_bath)
+        
+
 def visualize_data(data, overall_qual, grliv_area, garage_cars, full_bath):
     st.subheader("Data Visualization")
 
@@ -118,8 +126,7 @@ def visualize_data(data, overall_qual, grliv_area, garage_cars, full_bath):
     plt.xlabel('Year Built')
     plt.ylabel('Average Sale Price')
     plt.grid(True)
-    st.pyplot(plt)
+    st.pyplot()
 
 if __name__ == "__main__":
     main()
-
