@@ -6,23 +6,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 
-# Load the model
-try:
-    with open('house_price_model.pkl', 'rb') as model_file:
-        model = pickle.load(model_file)
-except FileNotFoundError:
-    st.error("Model file not found. Make sure the file path is correct.")
-except Exception as e:
-    st.error(f"Error loading the model: {e}")
+def load_model():
+    try:
+        with open('house_price_model.pkl', 'rb') as model_file:
+            model = pickle.load(model_file)
+        return model
+    except FileNotFoundError:
+        st.error("Model file not found. Make sure the file path is correct.")
+    except Exception as e:
+        st.error(f"Error loading the model: {e}")
 
-# Load the scaler
-try:
-    with open('scaler.pkl', 'rb') as scaler_file:
-        scaler = pickle.load(scaler_file)
-except FileNotFoundError:
-    st.error("Scaler file not found. Make sure the file path is correct.")
-except Exception as e:
-    st.error(f"Error loading the scaler: {e}")
+def load_scaler():
+    try:
+        with open('scaler.pkl', 'rb') as scaler_file:
+            scaler = pickle.load(scaler_file)
+        return scaler
+    except FileNotFoundError:
+        st.error("Scaler file not found. Make sure the file path is correct.")
+    except Exception as e:
+        st.error(f"Error loading the scaler: {e}")
 
 data = pd.read_csv("train.csv")
 
@@ -85,14 +87,9 @@ def main():
     full_bath = st.slider("Number of Full Bathrooms", 1, 4, 2)
 
     future_year = st.number_input("Future Year for Prediction", min_value=2023, max_value=2050, step=1, value=2023)
- # Load the model
-    try:
-        with open('house_price_model.pkl', 'rb') as model_file:
-            model = pickle.load(model_file)
-    except FileNotFoundError:
-        st.error("Model file not found. Make sure the file path is correct.")
-    except Exception as e:
-        st.error(f"Error loading the model: {e}")
+
+    model = load_model()
+    scaler = load_scaler()
 
     if st.button("Predict"):
         input_data = np.array([[overall_qual, grliv_area, garage_cars, full_bath, future_year]])
