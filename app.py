@@ -85,6 +85,14 @@ def main():
     full_bath = st.slider("Number of Full Bathrooms", 1, 4, 2)
 
     future_year = st.number_input("Future Year for Prediction", min_value=2023, max_value=2050, step=1, value=2023)
+ # Load the model
+    try:
+        with open('house_price_model.pkl', 'rb') as model_file:
+            model = pickle.load(model_file)
+    except FileNotFoundError:
+        st.error("Model file not found. Make sure the file path is correct.")
+    except Exception as e:
+        st.error(f"Error loading the model: {e}")
 
     if st.button("Predict"):
         input_data = np.array([[overall_qual, grliv_area, garage_cars, full_bath, future_year]])
